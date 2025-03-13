@@ -71,10 +71,15 @@ class QuoteController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Quote updated successfully!',
+            'message' => 'Quote updated successfully',
             'data' => new QuoteResource($quote)
         ], 200);
     }
 
-    public function destroy() {}
+    public function destroy(Quote $quote) {
+        $quote->delete();
+        return response()->json([
+            'message' => 'Quote deleted succesfully',
+        ] ,200);
+    }
 }
