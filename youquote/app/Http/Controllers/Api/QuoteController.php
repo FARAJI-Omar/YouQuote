@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class QuoteController extends Controller
 {
-    public function index()
+    public function index()         //show all quotes
     {
         $quotes = Quote::get();
 
@@ -21,7 +21,7 @@ class QuoteController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request)     //create new quote
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
@@ -46,12 +46,12 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function show(Quote $quote) 
+    public function show(Quote $quote)      //show single quote
     {
         return new QuoteResource($quote);
     }
 
-    public function update(Request $request, Quote $quote) 
+    public function update(Request $request, Quote $quote)      //update single quote
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
@@ -76,10 +76,23 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function destroy(Quote $quote) {
+    public function destroy(Quote $quote)       //delete single quote
+    {
         $quote->delete();
         return response()->json([
-            'message' => 'Quote deleted succesfully',
-        ] ,200);
+            'message' => 'Quote deleted succesfully'
+        ], 200);
+    }
+
+    public function random()            //show a random quote
+    {
+        $randomQuote = Quote::inRandomOrder()->first();
+
+        if (!$randomQuote) {
+            return response()->json(['message' => 'No Quotes available'], 404);
+        }
+
+        return new QuoteResource($randomQuote); 
+        // return response()->json(['data' => new QuoteResource($randomQuote)], 200);
     }
 }
