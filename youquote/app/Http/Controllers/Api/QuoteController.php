@@ -47,7 +47,9 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function show() {}
+    public function show(Quote $quote) {
+        return new QuoteResource($quote);
+    }
 
     public function update() {}
 
