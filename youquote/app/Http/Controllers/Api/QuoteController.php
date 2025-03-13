@@ -12,7 +12,6 @@ class QuoteController extends Controller
 {
     public function index()
     {
-
         $quotes = Quote::get();
 
         if ($quotes->count() > 0) {
@@ -47,11 +46,35 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function show(Quote $quote) {
+    public function show(Quote $quote) 
+    {
         return new QuoteResource($quote);
     }
 
-    public function update() {}
+    public function update(Request $request, Quote $quote) 
+    {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string',
+            'author' => 'required|string|max:200',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'All fields are mandatory',
+                'error' => $validator->messages(),
+            ], 422);
+        }
+
+        $quote->update([
+            'content' => $request->content,
+            'author' => $request->author,
+        ]);
+
+        return response()->json([
+            'message' => 'Quote updated successfully!',
+            'data' => new QuoteResource($quote)
+        ], 200);
+    }
 
     public function destroy() {}
 }
