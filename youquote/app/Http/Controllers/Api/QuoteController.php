@@ -84,15 +84,26 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function random()            //show a random quote
+    public function random(Request $request)    
+    //show a random quote, if param: ?count=X => X random quotes, if param not provided => 1 random quote
     {
-        $randomQuote = Quote::inRandomOrder()->first();
+        $count = $request->input('count', 1);
 
-        if (!$randomQuote) {
+        $validated = $request->validate([
+            'count' => 'integer|min:1|max:10'
+        ]);
+
+        $randomQuote = Quote::inRandomOrder()->take($count)->get();
+
+        if ($randomQuote->isEmpty()) {
             return response()->json(['message' => 'No Quotes available'], 404);
         }
 
-        return new QuoteResource($randomQuote); 
+        // return new QuoteResource($randomQuote); 
         // return response()->json(['data' => new QuoteResource($randomQuote)], 200);
+
+        return response()->json([
+            'data' => QuoteResource::collection($randomQuote)
+        ], 200);
     }
 }
