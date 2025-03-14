@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/quotes/random', [QuoteController::class, 'random']);
+
+Route::get('/quotes/filter', [QuoteController::class, 'filter']);
+
 Route::apiResource('quotes', QuoteController::class);
 
 

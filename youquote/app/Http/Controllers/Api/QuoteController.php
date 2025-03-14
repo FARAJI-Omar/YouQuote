@@ -106,4 +106,34 @@ class QuoteController extends Controller
             'data' => QuoteResource::collection($randomQuote)
         ], 200);
     }
+
+    public function filter(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'length' => 'required|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid length parameter',
+                'error' => $validator->messages(),
+            ], 422);
+        }
+
+        $maxLength = $request->input('length');
+
+        // Get all quotes and filter by word count in PHP
+        $filteredQuotes = Quote::all()->filter(function ($quote) use ($maxLength) {
+            return str_word_count($quote->content) <= $maxLength;
+        });
+
+        if ($filteredQuotes->isEmpty()) {
+            return response()->json(['message' => 'No quotes found with the specified word limit'], 404);
+        }
+
+        return response()->json([
+            'data' => QuoteResource::collection($filteredQuotes)
+        ], 200);
+    }
+
 }
