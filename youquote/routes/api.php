@@ -10,6 +10,8 @@ Route::get('/quotes/random', [QuoteController::class, 'random']);
 
 Route::get('/quotes/filter', [QuoteController::class, 'filter']);
 
+Route::get('/quotes/popular', [QuoteController::class, 'popular']);
+
 Route::apiResource('quotes', QuoteController::class);
 
 

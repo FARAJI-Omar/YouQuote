@@ -48,6 +48,9 @@ class QuoteController extends Controller
 
     public function show(Quote $quote)      //show single quote
     {
+        // Increment the popularity count for the requested quote
+        $quote->increment('popularity');
+
         return new QuoteResource($quote);
     }
 
@@ -95,6 +98,11 @@ class QuoteController extends Controller
 
         $randomQuote = Quote::inRandomOrder()->take($count)->get();
 
+        // Increment the popularity count for each random quote
+        foreach ($randomQuote as $quote) {
+        $quote->increment('popularity');
+    }
+
         if ($randomQuote->isEmpty()) {
             return response()->json(['message' => 'No Quotes available'], 404);
         }
@@ -107,7 +115,7 @@ class QuoteController extends Controller
         ], 200);
     }
 
-    public function filter(Request $request)
+    public function filter(Request $request)        // filter quotes by words count, limit by param length
     {
         $validator = Validator::make($request->all(), [
             'length' => 'required|integer|min:1'
@@ -135,5 +143,20 @@ class QuoteController extends Controller
             'data' => QuoteResource::collection($filteredQuotes)
         ], 200);
     }
+
+    public function popular()
+    {
+        // get the top 3 most popular quotes ordered by popularity in desc order
+        $topQuotes = Quote::orderBy('popularity', 'desc')->take(3)->get();
+    
+        if ($topQuotes->isEmpty()) {
+            return response()->json(['message' => 'No quotes found'], 404);
+        }
+    
+        return response()->json([
+            'data' => QuoteResource::collection($topQuotes)
+        ], 200);
+    }
+
 
 }
