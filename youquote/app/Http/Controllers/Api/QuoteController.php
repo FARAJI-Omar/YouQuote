@@ -7,9 +7,12 @@ use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class QuoteController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()         //show all quotes
     {
         $quotes = Quote::get();
@@ -38,6 +41,7 @@ class QuoteController extends Controller
         $quote = Quote::create([
             'content' => $request->content,
             'author' => $request->author,
+            'created_by' => $request->user()->id
         ]);
 
         return response()->json([
@@ -56,6 +60,8 @@ class QuoteController extends Controller
 
     public function update(Request $request, Quote $quote)      //update single quote
     {
+        $this->authorize('update', $quote);
+
         $validator = Validator::make($request->all(), [
             'content' => 'required|string',
             'author' => 'required|string|max:200',
@@ -65,13 +71,10 @@ class QuoteController extends Controller
             return response()->json([
                 'message' => 'All fields are mandatory',
                 'error' => $validator->messages(),
-            ], 422);
+            ], 403);
         }
 
-        $quote->update([
-            'content' => $request->content,
-            'author' => $request->author,
-        ]);
+        $quote->update($validator->validated());
 
         return response()->json([
             'message' => 'Quote updated successfully',
@@ -81,6 +84,8 @@ class QuoteController extends Controller
 
     public function destroy(Quote $quote)       //delete single quote
     {
+        $this->authorize('delete', $quote);
+
         $quote->delete();
         return response()->json([
             'message' => 'Quote deleted succesfully'

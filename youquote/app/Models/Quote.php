@@ -11,5 +11,11 @@ class Quote extends Model
     protected $fillable = [
         'content',
         'author',
+        'created_by',
     ];
+
+    public function users()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

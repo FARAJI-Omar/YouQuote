@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('content');
             $table->string('author');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
