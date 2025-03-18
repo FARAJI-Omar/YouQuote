@@ -13,6 +13,7 @@ Route::get('/quotes/popular', [QuoteController::class, 'popular']);
 
 Route::post('/auth/register', [UserController::class, 'register']);
 Route::post('/auth/login', [UserController::class, 'login']);
+Route::post('/auth/logout', [UserController::class, 'logout']);
 
 
 Route::apiResource('quotes', QuoteController::class);
